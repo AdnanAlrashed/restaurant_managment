@@ -38,7 +38,7 @@ class RegisterView(View):
 
         if form.is_valid():
             form.save()
-
+            print(form,"sdsds")
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}')
 

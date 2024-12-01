@@ -262,39 +262,86 @@ function get_Price_item(element_id) {
 }
 
 
+// function get_store_items_data(element_id) {
+//     let index = element_id.name.split('-');
+    
+//     let id_item=parseInt($(`#id_SalesInvoicelocalDetails-${index[1]}-item`).val())
+//     let id_store='';
+//     if($("#id_store").val()=='') 
+//     {
+//         alert("يجب عليك إختيار المخزن");
+//         return;
+//     }else{
+//         id_store=document.getElementById(`id_store`).value
+//     }
+
+//     $.ajax({
+//         url: '/get_store_items_data/',
+//         data:{
+//             "id_item":id_item,
+//             "id_store": id_store,
+//         },
+//         success: function(data) {
+//             let form_data = JSON.parse(data.data)[0].fields
+
+//             $(`#id_SalesInvoicelocalDetails-${index[1]}-qty_store`).val(form_data['qty'])
+//             $(`#id_SalesInvoicelocalDetails-${index[1]}-selling_price`).val(form_data['selling_price'])
+           
+
+
+//         },
+//         error: function(jqXHR){
+
+//         }
+//     })
+
+// }
+
 function get_store_items_data(element_id) {
     let index = element_id.name.split('-');
-    
-    let id_item=parseInt($(`#id_SalesInvoicelocalDetails-${index[1]}-item`).val())
-    let id_store='';
-    if($("#id_store").val()=='') 
-    {
+    let id_item = parseInt($(`#id_SalesInvoicelocalDetails-${index[1]}-item`).val());
+    let id_store = '';
+
+    if ($("#id_store").val() == '') {
         alert("يجب عليك إختيار المخزن");
         return;
-    }else{
-        id_store=document.getElementById(`id_store`).value
+    } else {
+        id_store = document.getElementById(`id_store`).value;
     }
 
     $.ajax({
         url: '/get_store_items_data/',
-        data:{
-            "id_item":id_item,
+        data: {
+            "id_item": id_item,
             "id_store": id_store,
         },
         success: function(data) {
-            let form_data = JSON.parse(data.data)[0].fields
+            console.log("Response data:", data);
 
-            $(`#id_SalesInvoicelocalDetails-${index[1]}-qty_store`).val(form_data['qty'])
-            $(`#id_SalesInvoicelocalDetails-${index[1]}-selling_price`).val(form_data['selling_price'])
-           
+            if (data.status === 1 && data.data) {
+                try {
+                    let form_data = JSON.parse(data.data)[0].fields;
+                    console.log(form_data, "Parsed form data");
 
-
+                    $(`#id_SalesInvoicelocalDetails-${index[1]}-qty_store`).val(form_data.qty);
+                    $(`#id_SalesInvoicelocalDetails-${index[1]}-selling_price`).val(form_data.selling_price);
+                } catch (error) {
+                    console.error("Error parsing JSON or accessing fields:", error);
+                    alert("حدث خطأ أثناء تحليل البيانات.");
+                }
+            } else {
+                console.error("Data is empty or missing 'data' property.");
+                alert(data.data || "البيانات المستلمة فارغة أو تفتقد الخاصية 'data'.");
+            }
         },
-        error: function(jqXHR){
-
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX request failed:", textStatus, errorThrown);
+            alert("فشل طلب AJAX: " + textStatus + " - " + errorThrown);
+            if (jqXHR.responseJSON && jqXHR.responseJSON.data) {
+                alert("Error message: " + jqXHR.responseJSON.data);
+            }
         }
-    })
-
+    });
 }
 
 

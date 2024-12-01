@@ -31,9 +31,6 @@ from django.utils.html import format_html
 from configrate.models import Unit,Store
 from input.models import Items
 
-
-
-
 from sales.forms import (
     SalesInvoiceForm,
     SalesInvoicelocalDetailsForm,
@@ -297,17 +294,42 @@ def get_store_items(request):
     return JsonResponse(result)
 
 
-def get_store_items_data(request):
-    id_item=request.GET.get("id_item")
-    id_store=request.GET.get("id_store")
-    expire_date=request.GET.get("expire_date")
-    if(id_item):
+# def get_store_items_data(request):
+#     id_item=request.GET.get("id_item")
+#     id_store=request.GET.get("id_store")
+#     expire_date=request.GET.get("expire_date")
+#     if(id_item):
 
-        data_=story_items.objects.filter(stor=id_store,Items=id_item)
-        result = {"status": 1, "data": serializers.serialize("json", data_)}
-    else:
-        result = {"status":0, "data": ""}
-    return JsonResponse(result)
+#         data_=story_items.objects.filter(stor=id_store,Items=id_item)
+#         result = {"status": 1, "data": serializers.serialize("json", data_)}
+#     else:
+#         result = {"status":0, "data": ""}
+#     return JsonResponse(result)
+
+def get_store_items_data(request):
+    id_item = request.GET.get("id_item")
+    id_store = request.GET.get("id_store")
+    expire_date = request.GET.get("expire_date")
+
+    try:
+        if id_item:
+            data_ = story_items.objects.filter(stor=id_store, Items=id_item)
+
+            if data_.exists():
+                serialized_data = serializers.serialize("json", data_)
+                result = {"status": 1, "data": serialized_data}
+            else:
+                result = {"status": 0, "data": "No items found"}
+        else:
+            result = {"status": 0, "data": "Missing id_item parameter"}
+
+        return JsonResponse(result)
+
+    except Exception as e:
+        # سجل الخطأ
+        print("Error:", e)
+        return JsonResponse({"status": 0, "data": str(e)}, status=500)
+
 
 
 

@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UserConfig',
     'crispy_forms',
+    'crispy_bootstrap4',
     'social_django',
     "configrate",
     "input",
@@ -49,7 +50,9 @@ ROOT_URLCONF = 'restaurant_managment.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,12 +71,35 @@ WSGI_APPLICATION = 'restaurant_managment.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'stordb',
+#         'USER': 'Acadimy',
+#         'PASSWORD': 'Aa!@#$%12345',
+#         'HOST':'localhost',
+#         'PORT': '3306'
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'storedb',  # اسم قاعدة البيانات
+        'USER': 'admin',  # اسم المستخدم
+        'PASSWORD': 'Aa112212345',  # كلمة المرور
+        'HOST': 'localhost',  # عادةً يكون 'localhost' إذا كنت تعمل محليًا
+        'PORT': '5432',  # المنفذ الافتراضي لـ PostgreSQL
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -135,6 +161,7 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'  # أو 'bootstrap5', 'uni_form', 'foundation', إلخ.
 
 # social auth configs for github
 SOCIAL_AUTH_GITHUB_KEY = str(os.getenv('GITHUB_KEY'))

@@ -181,42 +181,43 @@ class PurchaseInvoice(CreateView):
 
 
         if form.is_valid() and formset.is_valid():
-
+    
             # try:
                
             obj = form.save(commit=False)
             if request.POST.get("id_purchase_invo"):
                 obj.modified_by_id = request.user.id
-                PurchaseInvoicelocalDetails.objects.filter(purchase_invoicelocal_id = obj.id).delete()
+                PurchaseInvoicelocalDetails.objects.filter(purchase_invoicelocal_id=obj.id).delete()
             else:
                 obj.created_by_id = request.user.id
-            
+
             if not request.POST.get("id_purchase_invo"):
                 obj.code = get_maxcode()
+        
             obj.save()
             if formset.is_valid():
                 details_obj = formset.save(commit=False)
-                
-                
-                for instance in details_obj:
-                    obj_itm=story_items.objects.filter(Items=instance.item,stor=request.POST.get("store")).values("qty")
-                    obj_itm_=[]
-                    if obj_itm:
-                        obj_itm_=list(obj_itm)
-                        obj_itm_=obj_itm_[0]['qty']
-                        story_=story_items.objects.filter(Items=instance.item,stor=request.POST.get("store")).update(qty=int(obj_itm_)+int(instance.qty))    
-                    else:
-                        story_items.objects.create(
+        
+            for instance in details_obj:
+                store_instance = Store.objects.get(pk=request.POST.get("store"))
+                obj_itm = story_items.objects.filter(Items=instance.item, stor=store_instance).values("qty")
+                obj_itm_ = []
+
+                if obj_itm:
+                    obj_itm_ = list(obj_itm)
+                    obj_itm_ = obj_itm_[0]['qty']
+                    story_items.objects.filter(Items=instance.item, stor=store_instance).update(qty=int(obj_itm_) + int(instance.qty))
+                else:
+                    story_items.objects.create(
                         Items=instance.item,
                         qty=instance.qty,
-                        stor=request.POST.get("store"),
+                        stor=store_instance,
                         selling_price=instance.selling_price,
                         purch_price=instance.price
-                        )
-                    
-                    instance.purchase_invoicelocal_id = obj.id
-                    instance.save()
-            doc_id = 0
+                    )
+
+                instance.purchase_invoicelocal_id = obj.id
+                instance.save()
             if request.POST.get("id_purchase_invo"):
                 msg = "تم التعديل بنجاح"
                 result = {"status": 1, "message": msg}
