@@ -2098,9 +2098,8 @@
         <div class="row">
           <div class="col-md-6">
             <div class="m-6 mt-5 hidden-xs">
-              <p> التاريخ والوقت 04/28/2020 12:47 
-                <i class="fa fa-keyboard hover-q text-muted" aria-hidden="true" data-container="body" data-toggle="popover" data-placement="bottom" 
-                data-content="" data-html="true" data-trigger="hover" data-original-title="" title=""></i></p>
+              <p id="datetime">
+               </p>
             </div>
           </div>
           <div class="col-md-6">
@@ -2362,7 +2361,7 @@
                   Linking Street<br>Phoenix,Arizona,USA<br>(378) 400-1234
                 </span>
   
-                <span class="pull-right text-left">
+                <span class="pull-right text-left" >
                   <b>Date</b> 04/28/2020 14:52
   
                   <!-- Waiter info -->
@@ -2554,16 +2553,22 @@
         </small>
       </footer>
       <audio id="success-audio">
-        <source src="https://pos.ultimatefosters.com/audio/success.ogg?v=74" type="audio/ogg">
-        <source src="https://pos.ultimatefosters.com/audio/success.mp3?v=74" type="audio/mpeg">
+        <source src="{% static 'audio/success.ogg' %}" type="audio/ogg">
+        <source src="{% static 'audio/success.mp3' %}" type="audio/mpeg">
+        {% comment %} <source src="https://pos.ultimatefosters.com/audio/success.ogg?v=74" type="audio/ogg">
+        <source src="https://pos.ultimatefosters.com/audio/success.mp3?v=74" type="audio/mpeg"> {% endcomment %}
       </audio>
       <audio id="error-audio">
-        <source src="https://pos.ultimatefosters.com/audio/error.ogg?v=74" type="audio/ogg">
-        <source src="https://pos.ultimatefosters.com/audio/error.mp3?v=74" type="audio/mpeg">
+        <source src="{% static 'audio/error.ogg' %}" type="audio/ogg">
+        <source src="{% static 'audio/error.mp3' %}" type="audio/mpeg">
+        {% comment %} <source src="https://pos.ultimatefosters.com/audio/error.ogg?v=74" type="audio/ogg">
+        <source src="https://pos.ultimatefosters.com/audio/error.mp3?v=74" type="audio/mpeg"> {% endcomment %}
       </audio>
       <audio id="warning-audio">
-        <source src="https://pos.ultimatefosters.com/audio/warning.ogg?v=74" type="audio/ogg">
-        <source src="https://pos.ultimatefosters.com/audio/warning.mp3?v=74" type="audio/mpeg">
+        <source src="{% static 'audio/warning.ogg' %}" type="audio/ogg">
+        <source src="{% static 'audio/warning.mp3' %}" type="audio/mpeg">
+        {% comment %} <source src="https://pos.ultimatefosters.com/audio/warning.ogg?v=74" type="audio/ogg">
+        <source src="https://pos.ultimatefosters.com/audio/warning.mp3?v=74" type="audio/mpeg"> {% endcomment %}
       </audio>
   
     </div>
@@ -2582,7 +2587,61 @@
     <ul id="ui-id-1" tabindex="0" class="ui-menu ui-widget ui-widget-content ui-autocomplete ui-front" style="display: none;"></ul>
     <div role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></div>
     {% block scripts %}
-      
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/moment-hijri.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/pos.js'%}"></script>
+    <script>
+
+      function playSound(audioId) {
+        var audioElement = document.getElementById(audioId);
+        if (audioElement) {
+            audioElement.play();
+        }
+    }
+    
+    // مثال على تشغيل الصوت عند حدوث خطأ
+    function handleError() {
+        playSound('error-audio');
+    }
+    
+    // مثال على تشغيل الصوت عند النجاح
+    function handleSuccess() {
+        playSound('success-audio');
+    }
+    
+    // مثال على تشغيل الصوت عند وجود تحذير
+    function handleWarning() {
+        playSound('warning-audio');
+    }
+    
+    // افتراضيا يمكن استدعاء هذه الوظائف عند حدوث الأحداث المناسبة في نظام نقاط البيع
+    
+
+      function updateDateTime() {
+        const now = new Date();
+        let date, time;
+
+        // تحقق من إعدادات الجهاز
+        if (navigator.languages.includes('ar-EG')) {
+            // إذا كانت اللغة هي العربية المصرية، استخدم التاريخ الهجري
+            date = moment(now).format('iYYYY/iM/iD'); // تنسيق التاريخ الهجري
+            time = now.toLocaleTimeString('ar-EG'); // تنسيق الوقت باللغة العربية
+        } else {
+            // استخدم التاريخ الميلادي الافتراضي
+            date = now.toLocaleDateString(); // تنسيق التاريخ الميلادي
+            time = now.toLocaleTimeString(); // تنسيق الوقت الافتراضي
+        }
+
+        document.getElementById('datetime').innerHTML = `<b>الوقت والتاريخ  <i class="fa fa-keyboard hover-q text-muted" aria-hidden="true" data-container="body" data-toggle="popover" data-placement="bottom" 
+            data-content="" data-html="true" data-trigger="hover" data-original-title="" title=""></i></b> ${date} ${time}`;
+      }
+
+      window.onload = function() {
+          updateDateTime(); // تحديث التاريخ والوقت عند تحميل الصفحة
+          setInterval(updateDateTime, 1000); // تحديث التاريخ والوقت كل ثانية
+      };
+
+    </script>
+      
     {% endblock scripts %}
 {% endblock content %}

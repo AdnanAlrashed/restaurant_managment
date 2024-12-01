@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
@@ -137,7 +138,7 @@ class UserDataJson(BaseDatatableView):
         # simple example:
         search = self.request.GET.get('search[value]', None)
         if search:
-            qs = qs.filter(name__istartswith=search)
+            qs = qs.filter(username__istartswith=search)
 
         # more advanced example using extra parameters
         filter_customer = self.request.GET.get('customer', None)

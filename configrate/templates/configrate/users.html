@@ -95,6 +95,7 @@
                   <div class="form-group">
                       <label class="small mb-1">إعادة كتابة كلمة المرور</label>
                       {{ form.password2 }}
+                      <div id="password-error" class="text-danger"></div>
                   </div>
               </div>
           </div>
@@ -129,7 +130,6 @@ let csrf = '{{ csrf_token }}';
             xhr.setRequestHeader("X-CSRFToken", csrf);
           },
         success: function(data) {
-          
           if(data.status=="1")
           {
             alert(data.message);
@@ -137,7 +137,13 @@ let csrf = '{{ csrf_token }}';
             $('#modal-lg').modal('hide');
            }
             else{
-            console.log(data.message["password2"]);
+                
+                if (data.message["password2"]) {
+                    // عرض الرسالة في العنصر المحدد
+                    $('#password-error').text("كلمتا المرور غير متطابقتين. يرجى التأكد وإعادة المحاولة.");
+                } else {
+                    $('#password-error').text("حدث خطأ ما: " + data.message);
+                }
             }
         }
       })
